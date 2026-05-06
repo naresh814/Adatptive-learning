@@ -1,0 +1,3 @@
+/* static/style.css — base styles (dashboard CSS is inline in index.html) */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; }

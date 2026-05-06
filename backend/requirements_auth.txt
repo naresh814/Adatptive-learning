@@ -1,0 +1,4 @@
+# Authentication system dependencies (NEW)
+# Install with: pip install -r requirements_auth.txt
+flask-sqlalchemy
+flask-bcrypt

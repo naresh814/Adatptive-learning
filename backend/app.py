@@ -20,6 +20,7 @@ import sys
 import collections
 from tensorflow.keras.models import load_model
 import tensorflow as tf
+<<<<<<< HEAD
 print("GPUs:", tf.config.list_physical_devices('GPU'))
 gpus = tf.config.list_physical_devices('GPU')
 
@@ -30,6 +31,9 @@ if gpus:
         print("[INFO] GPU acceleration enabled")
     except RuntimeError as e:
         print(e)
+=======
+
+>>>>>>> 5ed801d16cc914947ae036cb4df6251698188a6d
 import os
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
@@ -90,6 +94,7 @@ CONTENT_MAP     = {
 }
 
 # ── Tuning knobs ──────────────────────────────────────────────────────────────
+<<<<<<< HEAD
 FRAME_SKIP          = 5      # run CNN every 5th frame (better FPS)
 SMOOTH_WINDOW       = 7      # majority-vote window size
 MIN_CONFIDENCE      = 0.40   # ignore weak predictions
@@ -97,6 +102,16 @@ TEMPERATURE         = 1.5
 DETECTION_SCALE     = 0.35   # smaller detection frame = faster processing
 CASCADE_SCALE       = 1.2
 CASCADE_NEIGHBORS   = 4
+=======
+FRAME_SKIP          = 3      # run CNN every Nth frame  (FPS boost: 2→3)
+SMOOTH_WINDOW       = 7      # majority-vote window size (stability fix)
+MIN_CONFIDENCE      = 0.40   # ignore predictions below this (noise fix)
+TEMPERATURE         = 1.5    # softmax temperature > 1 spreads distribution (confidence fix)
+DETECTION_SCALE     = 0.5    # downscale frame before Haar (FPS fix)
+CASCADE_SCALE       = 1.2    # faster than 1.3 with minNeighbors=4
+CASCADE_NEIGHBORS   = 4
+
+>>>>>>> 5ed801d16cc914947ae036cb4df6251698188a6d
 # ── Thread-safe shared state ──────────────────────────────────────────────────
 _lock = threading.Lock()
 state = {
@@ -293,7 +308,11 @@ def process_thread():
                     cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 0), 2)
 
         # ── Encode to base64 ────────────────────────────────────────────────
+<<<<<<< HEAD
         _, buf = cv2.imencode(".jpg", display, [cv2.IMWRITE_JPEG_QUALITY, 40])
+=======
+        _, buf    = cv2.imencode(".jpg", display, [cv2.IMWRITE_JPEG_QUALITY, 65])
+>>>>>>> 5ed801d16cc914947ae036cb4df6251698188a6d
         frame_b64 = base64.b64encode(buf).decode("utf-8")
 
         # ── Update shared state ──────────────────────────────────────────────
@@ -317,12 +336,17 @@ def process_thread():
             if len(hist) > 60:
                 hist.pop(0)
 
+<<<<<<< HEAD
         time.sleep(0.01)  # lower CPU usage and reduce lag  # yield CPU
+=======
+        time.sleep(0.005)  # yield CPU
+>>>>>>> 5ed801d16cc914947ae036cb4df6251698188a6d
 
     with _lock:
         state["camera_running"] = False
     print("[INFO] Process thread ended.")
 
+<<<<<<< HEAD
 def generate_frames():
     while True:
         with _lock:
@@ -346,6 +370,8 @@ def generate_frames():
 
         time.sleep(0.03)
 
+=======
+>>>>>>> 5ed801d16cc914947ae036cb4df6251698188a6d
 
 def start_camera_pipeline():
     """Opens camera and starts capture + process threads."""
@@ -378,8 +404,13 @@ def start_camera_pipeline():
         return
 
     cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+<<<<<<< HEAD
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 320)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 240)
+=======
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH,  640)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+>>>>>>> 5ed801d16cc914947ae036cb4df6251698188a6d
 
     # Start both threads
     threading.Thread(target=capture_thread, args=(cap,), daemon=True).start()
@@ -465,6 +496,7 @@ def get_frame():
     with _lock:
         return jsonify({"frame": state["frame_b64"]})
 
+<<<<<<< HEAD
 @app.route("/video_feed")
 @login_required
 def video_feed():
@@ -472,6 +504,9 @@ def video_feed():
         generate_frames(),
         mimetype='multipart/x-mixed-replace; boundary=frame'
     )
+=======
+
+>>>>>>> 5ed801d16cc914947ae036cb4df6251698188a6d
 if __name__ == "__main__":
     # Create auth tables on first run
     with app.app_context():

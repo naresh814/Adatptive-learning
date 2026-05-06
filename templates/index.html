@@ -563,6 +563,7 @@ function updateUI(d) {
   document.getElementById('engPctVal').textContent = ep + '%';
 
   // Camera frame + live FPS overlay
+<<<<<<< HEAD
 const img = document.getElementById('camImg');
 
 if (img.src.indexOf('/video_feed') === -1) {
@@ -573,6 +574,16 @@ img.style.display = 'block';
 document.getElementById('camOff').style.display = 'none';
 document.getElementById('camRec').style.display = 'block';
 document.getElementById('camRec').textContent = '● REC · FPS:' + (d.fps || '–');
+=======
+  if (d.frame_b64) {
+    const img = document.getElementById('camImg');
+    img.src = 'data:image/jpeg;base64,' + d.frame_b64;
+    img.style.display = 'block';
+    document.getElementById('camOff').style.display = 'none';
+    document.getElementById('camRec').style.display = 'block';
+    document.getElementById('camRec').textContent = '● REC · FPS:' + (d.fps || '–');
+  }
+>>>>>>> 5ed801d16cc914947ae036cb4df6251698188a6d
 
   // Log on notable events
   sessionData.push({ time: d.session_time, emotion: d.emotion, attention: att });

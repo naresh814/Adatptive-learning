@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Register — LearnAdapt</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#f5f4f0;--surface:#fff;--surface2:#f0efe9;--border:rgba(0,0,0,0.08);--border-s:rgba(0,0,0,0.14);--text:#1a1a1a;--muted:#6b6b6b;--accent:#5c6bc0;--accent-l:#e8eaf6;--accent-d:#4a5ab0;--green:#1b6e4b;--green-l:#e0f2eb;--red:#991b1b;--red-l:#fee2e2;--r:14px;--rs:8px}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);display:flex;align-items:center;justify-content:center;min-height:100vh;overflow:hidden;position:relative}
+body::before,body::after{content:'';position:fixed;border-radius:50%;filter:blur(90px);opacity:.35;z-index:0;pointer-events:none}
+body::before{width:380px;height:380px;background:#7c4dff;top:-60px;right:-80px;animation:f1 15s ease-in-out infinite}
+body::after{width:400px;height:400px;background:var(--accent);bottom:-80px;left:-100px;animation:f2 17s ease-in-out infinite}
+@keyframes f1{0%,100%{transform:translate(0,0)}50%{transform:translate(-50px,40px)}}
+@keyframes f2{0%,100%{transform:translate(0,0)}50%{transform:translate(60px,-30px)}}
+.wrap{position:relative;z-index:1;width:100%;max-width:420px;padding:0 20px;animation:fadeUp .5s ease-out both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+.brand{text-align:center;margin-bottom:32px}
+.brand-icon{width:52px;height:52px;border-radius:14px;background:var(--accent);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:10px;box-shadow:0 8px 24px rgba(92,107,192,.3)}
+.brand-title{font-size:22px;font-weight:700;letter-spacing:-.3px}
+.brand-title span{color:var(--accent)}
+.brand-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:36px 32px 32px;box-shadow:0 4px 32px rgba(0,0,0,.06)}
+.card h2{font-size:18px;font-weight:600;margin-bottom:4px}
+.card .sub{font-size:13px;color:var(--muted);margin-bottom:24px}
+.field{margin-bottom:18px}
+.field label{display:block;font-size:11px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.field input{width:100%;padding:11px 14px;font-family:'DM Sans',sans-serif;font-size:14px;border:1.5px solid var(--border-s);border-radius:10px;background:var(--surface2);color:var(--text);outline:none;transition:border-color .2s,box-shadow .2s}
+.field input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(92,107,192,.12)}
+.field input::placeholder{color:#b0b0b0}
+.sbtn{width:100%;padding:12px;margin-top:6px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;color:#fff;background:var(--accent);border:none;border-radius:10px;cursor:pointer;transition:background .15s,transform .1s,box-shadow .2s;box-shadow:0 4px 14px rgba(92,107,192,.25);position:relative;overflow:hidden}
+.sbtn:hover{background:var(--accent-d);transform:translateY(-1px);box-shadow:0 6px 20px rgba(92,107,192,.3)}
+.sbtn:active{transform:translateY(0)}
+.sbtn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.sbtn .sp{display:none;width:18px;height:18px;border:2.5px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;margin:0 auto}
+.sbtn.ld .bt{display:none}.sbtn.ld .sp{display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+.msg{display:none;margin-top:14px;padding:10px 14px;border-radius:9px;font-size:12px;font-weight:500;align-items:center;gap:7px}
+.msg.err{background:var(--red-l);color:var(--red);border:1px solid rgba(153,27,27,.15);animation:shake .35s ease}
+.msg.ok{background:var(--green-l);color:var(--green);border:1px solid rgba(27,110,75,.15)}
+.msg.show{display:flex}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-3px)}}
+.foot{text-align:center;margin-top:20px;font-size:13px;color:var(--muted)}
+.foot a{color:var(--accent);text-decoration:none;font-weight:600;transition:color .15s}
+.foot a:hover{color:var(--accent-d);text-decoration:underline}
+.pipe{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:24px;font-size:11px;color:var(--muted)}
+.pipe .d{width:6px;height:6px;border-radius:50%}
+.pw-hint{font-size:10px;color:var(--muted);margin-top:4px;padding-left:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">
+    <div class="brand-icon">🧠</div>
+    <div class="brand-title">Learn<span>Adapt</span></div>
+    <div class="brand-sub">ASD Adaptive Learning System</div>
+  </div>
+  <div class="card">
+    <h2>Create your account</h2>
+    <p class="sub">Register to start using the adaptive dashboard</p>
+    <form id="regForm" onsubmit="handleRegister(event)" autocomplete="on">
+      <div class="field">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" placeholder="Choose a username" required minlength="3" autocomplete="username" autofocus/>
+        <div class="pw-hint">Minimum 3 characters</div>
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="Create a password" required minlength="6" autocomplete="new-password"/>
+        <div class="pw-hint">Minimum 6 characters</div>
+      </div>
+      <div class="field">
+        <label for="confirm">Confirm Password</label>
+        <input type="password" id="confirm" name="confirm" placeholder="Re-enter your password" required minlength="6" autocomplete="new-password"/>
+      </div>
+      <button type="submit" class="sbtn" id="submitBtn">
+        <span class="bt">Create Account</span>
+        <div class="sp"></div>
+      </button>
+    </form>
+    <div class="msg err" id="errMsg"><span>⚠</span><span id="errTxt"></span></div>
+    <div class="msg ok" id="okMsg"><span>✓</span><span id="okTxt"></span></div>
+  </div>
+  <div class="foot">Already have an account? <a href="/login">Sign in</a></div>
+  <div class="pipe">
+    <span class="d" style="background:var(--green)"></span> FER CNN
+    <span class="d" style="background:var(--green)"></span> Haar Cascade
+    <span class="d" style="background:var(--accent)"></span> DKT
+    <span class="d" style="background:#7c4dff"></span> Bandit
+  </div>
+</div>
+<script>
+function handleRegister(e){
+  e.preventDefault();
+  var btn=document.getElementById('submitBtn'),eE=document.getElementById('errMsg'),eT=document.getElementById('errTxt'),oE=document.getElementById('okMsg'),oT=document.getElementById('okTxt');
+  var u=document.getElementById('username').value.trim(),p=document.getElementById('password').value,c=document.getElementById('confirm').value;
+  eE.classList.remove('show');oE.classList.remove('show');
+  if(u.length<3){showErr('Username must be at least 3 characters');return}
+  if(p.length<6){showErr('Password must be at least 6 characters');return}
+  if(p!==c){showErr('Passwords do not match');return}
+  btn.classList.add('ld');btn.disabled=true;
+  fetch('/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})})
+  .then(function(r){return r.json()})
+  .then(function(d){
+    btn.classList.remove('ld');btn.disabled=false;
+    if(d.success){
+      localStorage.setItem('la_username',u);
+      oT.textContent='Account created! Redirecting to login...';oE.classList.add('show');
+      setTimeout(function(){window.location.href='/login'},1200);
+    }else{showErr(d.error||'Registration failed')}
+  })
+  .catch(function(){btn.classList.remove('ld');btn.disabled=false;showErr('Could not connect to server. Is app.py running?')});
+}
+function showErr(m){var e=document.getElementById('errMsg'),t=document.getElementById('errTxt');t.textContent=m;e.classList.remove('show');void e.offsetWidth;e.classList.add('show')}
+</script>
+</body>
+</html>

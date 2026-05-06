@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ASD Adaptive Learning System</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg:#f5f4f0;--surface:#fff;--surface2:#f0efe9;
+  --border:rgba(0,0,0,0.08);--border-s:rgba(0,0,0,0.14);
+  --text:#1a1a1a;--muted:#6b6b6b;
+  --accent:#5c6bc0;--accent-l:#e8eaf6;
+  --green:#1b6e4b;--green-l:#e0f2eb;
+  --amber:#92400e;--amber-l:#fef3c7;
+  --red:#991b1b;--red-l:#fee2e2;
+  --purple:#6d28d9;--purple-l:#ede9fe;
+  --r:14px;--rs:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.5}
+
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-icon{width:34px;height:34px;border-radius:9px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:17px}
+.brand-name{font-weight:600;font-size:15px}
+.brand-name span{color:var(--accent)}
+.hright{display:flex;align-items:center;gap:14px}
+.live-badge{display:flex;align-items:center;gap:6px;background:var(--green-l);color:var(--green);padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:blink 1.4s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.btn{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;padding:7px 18px;border-radius:var(--rs);border:1px solid var(--border-s);cursor:pointer;background:var(--surface);color:var(--text);transition:all .15s}
+.btn:hover{background:var(--surface2)}
+.btn-p{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn-p:hover{background:#4a5ab0}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+
+.layout{display:grid;grid-template-columns:250px 1fr 272px;min-height:calc(100vh - 58px)}
+
+.sidebar{background:var(--surface);border-right:1px solid var(--border);padding:20px 0;overflow-y:auto}
+.ss{padding:0 18px;margin-bottom:24px}
+.slabel{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+
+.profile{background:var(--surface2);border-radius:var(--r);padding:14px;text-align:center}
+.avatar{width:56px;height:56px;border-radius:50%;background:var(--accent-l);margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:26px}
+.pname{font-weight:600;font-size:14px;margin-bottom:2px}
+.psub{font-size:11px;color:var(--muted)}
+.pstats{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px}
+.pstat{background:var(--surface);border-radius:7px;padding:7px;text-align:center}
+.psv{font-family:'DM Mono',monospace;font-size:16px;font-weight:500;color:var(--accent);line-height:1}
+.psk{font-size:10px;color:var(--muted);margin-top:2px}
+
+.nav-item{display:flex;align-items:center;gap:9px;padding:8px 14px;border-radius:var(--rs);margin:2px 4px;cursor:pointer;font-size:13px;font-weight:500;color:var(--muted);transition:background .12s}
+.nav-item:hover{background:var(--surface2);color:var(--text)}
+.nav-item.active{background:var(--accent-l);color:var(--accent)}
+
+.main{overflow-y:auto;padding:22px;background:var(--bg)}
+.ph{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px}
+.pt{font-size:19px;font-weight:600;letter-spacing:-.3px}
+.ps{font-size:12px;color:var(--muted);margin-top:2px}
+
+.srow{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-bottom:18px}
+.sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:15px 17px;position:relative}
+.scl{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+.scv{font-family:'DM Mono',monospace;font-size:26px;font-weight:500;line-height:1}
+.scv.g{color:var(--green)}.scv.a{color:var(--amber)}.scv.ac{color:var(--accent)}
+.scs{font-size:11px;color:var(--muted);margin-top:5px}
+.sci{position:absolute;top:13px;right:13px;font-size:19px}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px;margin-bottom:14px}
+.ct{font-size:13px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+.ctsub{font-size:11px;color:var(--muted);font-weight:400}
+
+.erow{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.echip{display:flex;flex-direction:column;align-items:center;gap:3px;padding:9px 11px;background:var(--surface2);border:1.5px solid var(--border);border-radius:9px;cursor:pointer;transition:all .15s;min-width:66px}
+.echip:hover,.echip.active{border-color:var(--accent);background:var(--accent-l)}
+.eico{font-size:20px}.ename{font-size:10px;font-weight:600;color:var(--muted)}.epct{font-family:'DM Mono',monospace;font-size:11px;color:var(--accent)}
+
+.ring-wrap{position:relative;width:110px;height:110px;flex-shrink:0}
+.ring-wrap svg{transform:rotate(-90deg)}
+.ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.rpct{font-family:'DM Mono',monospace;font-size:22px;font-weight:500;line-height:1}
+.rlbl{font-size:10px;color:var(--muted);margin-top:2px}
+
+.arow{display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border)}
+.arow:last-child{border-bottom:none}
+.ak{font-size:12px;color:var(--muted)}.av{font-size:12px;font-weight:600}
+.av.g{color:var(--green)}.av.a{color:var(--amber)}.av.r{color:var(--red)}
+
+.chart-wrap{position:relative;height:175px}
+
+.dkt-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.tcard{border:1px solid var(--border);border-radius:9px;padding:10px;text-align:center;cursor:pointer;transition:all .15s}
+.tcard:hover{border-color:var(--accent)}
+.tname{font-size:10px;font-weight:600;margin-bottom:5px}
+.tbar{background:var(--surface2);border-radius:3px;height:5px;overflow:hidden;margin-bottom:3px}
+.tfill{height:100%;border-radius:3px;transition:width 1s ease}
+.tpct{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace}
+
+.rbox{border:1px solid var(--border);border-radius:9px;padding:12px;display:flex;gap:11px;align-items:flex-start;transition:all .3s;margin-bottom:9px}
+.rbox.ar{border-color:var(--accent);background:var(--accent-l)}
+.rico{width:34px;height:34px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;background:var(--surface2)}
+.rh{font-size:12px;font-weight:600;margin-bottom:2px}
+.rb{font-size:11px;color:var(--muted);line-height:1.5}
+
+.log-list{max-height:170px;overflow-y:auto}
+.log-list::-webkit-scrollbar{width:3px}
+.log-list::-webkit-scrollbar-thumb{background:var(--border-s);border-radius:2px}
+.le{display:flex;gap:9px;align-items:flex-start;padding:7px 0;border-bottom:1px solid var(--border);animation:fs .3s ease}
+@keyframes fs{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}
+.le:last-child{border-bottom:none}
+.lt{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);flex-shrink:0;padding-top:2px}
+.ld{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:3px}
+.lm{font-size:11px;line-height:1.4}
+
+.rpanel{background:var(--surface);border-left:1px solid var(--border);padding:20px 18px;overflow-y:auto}
+.psec{margin-bottom:24px}
+.ptitle{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+
+.cambox{background:#0d0d0d;border-radius:10px;aspect-ratio:4/3;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;margin-bottom:9px}
+.cam-off{color:rgba(255,255,255,.3);text-align:center;font-size:12px}
+.cam-img{width:100%;height:100%;object-fit:cover;display:none;border-radius:10px}
+.cam-rec{position:absolute;top:8px;left:8px;font-size:9px;font-family:'DM Mono',monospace;color:#4caf50;display:none}
+.cbtn{flex:1;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;padding:7px;border-radius:7px;border:1px solid var(--border-s);cursor:pointer;background:var(--surface);transition:all .12s;text-align:center}
+.cbtn.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.cbtn:hover:not(.on){background:var(--surface2)}
+
+.vwrap{display:flex;align-items:flex-end;gap:2px;height:38px;background:var(--surface2);border-radius:7px;padding:5px 8px;margin-bottom:5px}
+.vb{flex:1;border-radius:2px;background:var(--accent-l);transition:height .12s;min-height:3px}
+
+.pm{display:flex;align-items:center;gap:9px;margin-bottom:10px}
+.pmi{font-size:15px;width:22px;text-align:center}
+.pminfo{flex:1}
+.pmlabel{font-size:11px;color:var(--muted)}
+.pmbar{background:var(--surface2);border-radius:3px;height:4px;margin-top:3px;overflow:hidden}
+.pmfill{height:100%;border-radius:3px;transition:width .8s ease}
+.pmval{font-size:11px;font-family:'DM Mono',monospace;color:var(--accent)}
+
+.cblock{border:1px solid var(--border);border-radius:9px;overflow:hidden}
+.cbhead{background:var(--surface2);padding:9px 12px;display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600}
+.cbbody{padding:10px 12px;font-size:11px;color:var(--muted);line-height:1.6}
+.dpill{font-size:10px;font-weight:600;padding:2px 7px;border-radius:9px;margin-left:auto}
+.de{background:var(--green-l);color:var(--green)}.dm{background:var(--amber-l);color:var(--amber)}.dh{background:var(--red-l);color:var(--red)}
+
+.conn-status{display:flex;align-items:center;gap:6px;font-size:12px;padding:6px 10px;border-radius:7px;background:var(--surface2);margin-bottom:10px}
+.cs-dot{width:8px;height:8px;border-radius:50%}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="brand-icon">🧠</div>
+    <div>
+      <div class="brand-name">Learn<span>Adapt</span> <span style="font-size:11px;color:var(--muted);font-weight:400">· ASD Learning System</span></div>
+    </div>
+  </div>
+  <div class="hright">
+    <span id="clockEl" style="font-family:'DM Mono',monospace;font-size:12px;color:var(--muted)">--:--:--</span>
+    <div class="live-badge"><div class="dot"></div> <span id="sessionLabel">Ready</span></div>
+    <button class="btn btn-p" id="startBtn" onclick="startSession()">▶ Start Session</button>
+    <button class="btn" id="stopBtn" onclick="stopSession()" disabled>■ Stop</button>
+    <span style="font-size:12px;color:var(--muted);font-weight:500">👤 {{ username }}</span>
+    <a href="/logout" class="btn" style="text-decoration:none;font-size:12px">⎋ Logout</a>
+  </div>
+</header>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="ss">
+      <div class="slabel">Student</div>
+      <div class="profile">
+        <div class="avatar">👤</div>
+        <div class="pname">{{ username }}</div>
+        <div class="psub">Active Session · ASD Learning System</div>
+        <div class="pstats">
+          <div class="pstat"><div class="psv" id="sbAtt">--</div><div class="psk">Attention</div></div>
+          <div class="pstat"><div class="psv">14</div><div class="psk">Sessions</div></div>
+          <div class="pstat"><div class="psv" id="sbEng">--</div><div class="psk">Engaged%</div></div>
+          <div class="pstat"><div class="psv" id="sbAlerts">0</div><div class="psk">Alerts</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="ss">
+      <div class="slabel">Navigation</div>
+      <div class="nav-item active">📊 Dashboard</div>
+      <div class="nav-item">😊 Emotion Analysis</div>
+      <div class="nav-item">📚 Learning Content</div>
+      <div class="nav-item">📈 Progress Report</div>
+      <div class="nav-item">⚙️ Settings</div>
+    </div>
+    <div class="ss">
+      <div class="slabel">Backend Status</div>
+      <div class="conn-status" id="connStatus">
+        <div class="cs-dot" id="csDot" style="background:var(--muted)"></div>
+        <span id="csText">Not connected</span>
+      </div>
+      <div style="font-size:11px;color:var(--muted);line-height:1.8">
+        <div>Model: <span style="color:var(--text);font-weight:500">emotion_model.h5</span></div>
+        <div>Detector: <span style="color:var(--text);font-weight:500">Haar Cascade</span></div>
+        <div>Input: <span style="color:var(--text);font-weight:500">48×48 grayscale</span></div>
+        <div>Classes: <span style="color:var(--text);font-weight:500">7 emotions</span></div>
+        <div>API: <span style="color:var(--text);font-weight:500">localhost:5000</span></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="ph">
+      <div>
+        <div class="pt">Real-Time Monitoring Dashboard</div>
+        <div class="ps">Live data from your emotion_model.h5 · Haar Cascade face detection · Flask API</div>
+      </div>
+      <button class="btn" onclick="exportCSV()">↓ Export Report</button>
+    </div>
+
+    <!-- Stat cards -->
+    <div class="srow">
+      <div class="sc">
+        <div class="sci">🎯</div>
+        <div class="scl">Attention Score</div>
+        <div class="scv ac" id="attScore">--</div>
+        <div class="scs" id="attStatus">Start session to monitor</div>
+      </div>
+      <div class="sc">
+        <div class="sci">😊</div>
+        <div class="scl">Detected Emotion</div>
+        <div class="scv" id="emoDisplay" style="font-size:18px;padding-top:3px">-- --</div>
+        <div class="scs" id="emoConf">Confidence: --</div>
+      </div>
+      <div class="sc">
+        <div class="sci">📖</div>
+        <div class="scl">Content Mode</div>
+        <div class="scv g" id="contentLevel">--</div>
+        <div class="scs" id="contentType">Waiting...</div>
+      </div>
+    </div>
+
+    <!-- Emotion chips + ring -->
+    <div class="card">
+      <div class="ct">Facial Emotion Recognition <span class="ctsub">FER2013 CNN · your trained model</span></div>
+      <div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap">
+        <div class="erow" id="eChips">
+          <div class="echip" data-e="Happy"><span class="eico">😊</span><span class="ename">Happy</span><span class="epct" id="ep-Happy">0%</span></div>
+          <div class="echip" data-e="Neutral"><span class="eico">😐</span><span class="ename">Neutral</span><span class="epct" id="ep-Neutral">0%</span></div>
+          <div class="echip" data-e="Fear"><span class="eico">😨</span><span class="ename">Fear</span><span class="epct" id="ep-Fear">0%</span></div>
+          <div class="echip" data-e="Sad"><span class="eico">😢</span><span class="ename">Sad</span><span class="epct" id="ep-Sad">0%</span></div>
+          <div class="echip" data-e="Angry"><span class="eico">😠</span><span class="ename">Angry</span><span class="epct" id="ep-Angry">0%</span></div>
+          <div class="echip" data-e="Surprise"><span class="eico">😲</span><span class="ename">Surprise</span><span class="epct" id="ep-Surprise">0%</span></div>
+          <div class="echip" data-e="Disgust"><span class="eico">🤢</span><span class="ename">Disgust</span><span class="epct" id="ep-Disgust">0%</span></div>
+        </div>
+        <div style="flex-shrink:0">
+          <div class="ring-wrap">
+            <svg width="110" height="110" viewBox="0 0 110 110">
+              <circle cx="55" cy="55" r="46" fill="none" stroke="#f0efe9" stroke-width="9"/>
+              <circle id="attRing" cx="55" cy="55" r="46" fill="none" stroke="#5c6bc0" stroke-width="9"
+                stroke-linecap="round" stroke-dasharray="289" stroke-dashoffset="289"
+                style="transition:stroke-dashoffset .8s ease,stroke .4s"/>
+            </svg>
+            <div class="ring-center">
+              <div class="rpct" id="ringPct">0%</div>
+              <div class="rlbl">Attention</div>
+            </div>
+          </div>
+        </div>
+        <div style="flex:1;min-width:150px">
+          <div class="arow"><span class="ak">Face detected</span><span class="av" id="aFace">--</span></div>
+          <div class="arow"><span class="ak">Engagement</span><span class="av" id="aEng">--</span></div>
+          <div class="arow"><span class="ak">Session time</span><span class="av ac" id="aTime">00:00</span></div>
+          <div class="arow"><span class="ak">Engaged %</span><span class="av g" id="aEngPct">--%</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live chart -->
+    <div class="card">
+      <div class="ct">Live Attention Timeline <span class="ctsub">Real model output · updates every 800ms</span></div>
+      <div class="chart-wrap"><canvas id="attChart"></canvas></div>
+    </div>
+
+    <!-- DKT -->
+    <div class="card">
+      <div class="ct">Deep Knowledge Tracing <span class="ctsub">Topic mastery prediction</span></div>
+      <div class="dkt-grid">
+        <div class="tcard"><div class="tname">Numbers 1-10</div><div class="tbar"><div class="tfill" style="width:82%;background:#5c6bc0"></div></div><div class="tpct">82%</div></div>
+        <div class="tcard"><div class="tname">Basic Shapes</div><div class="tbar"><div class="tfill" style="width:65%;background:#1b6e4b"></div></div><div class="tpct">65%</div></div>
+        <div class="tcard"><div class="tname">Colors</div><div class="tbar"><div class="tfill" style="width:91%;background:#6d28d9"></div></div><div class="tpct">91%</div></div>
+        <div class="tcard"><div class="tname">Addition</div><div class="tbar"><div class="tfill" style="width:44%;background:#92400e"></div></div><div class="tpct">44%</div></div>
+        <div class="tcard"><div class="tname">Animals</div><div class="tbar"><div class="tfill" style="width:73%;background:#5c6bc0"></div></div><div class="tpct">73%</div></div>
+        <div class="tcard"><div class="tname">Letters A-Z</div><div class="tbar"><div class="tfill" style="width:58%;background:#991b1b"></div></div><div class="tpct">58%</div></div>
+        <div class="tcard"><div class="tname">Patterns</div><div class="tbar"><div class="tfill" style="width:37%;background:#92400e"></div></div><div class="tpct">37%</div></div>
+        <div class="tcard"><div class="tname">Sight Words</div><div class="tbar"><div class="tfill" style="width:29%;background:#991b1b"></div></div><div class="tpct">29%</div></div>
+      </div>
+    </div>
+
+    <!-- Contextual bandit -->
+    <div class="card">
+      <div class="ct">Contextual Bandit — Adaptive Content <span class="ctsub">Auto-switches based on live emotion</span></div>
+      <div class="rbox ar" id="rb0"><div class="rico">🖼️</div><div><div class="rh">Visual Flashcards</div><div class="rb" id="rbDesc">Waiting for emotion detection...</div></div></div>
+      <div class="rbox" id="rb1"><div class="rico">🔊</div><div><div class="rh">Short Audio Prompt</div><div class="rb">Triggered when attention drops. Plays gentle tone + encouraging question.</div></div></div>
+      <div class="rbox" id="rb2"><div class="rico">🧘</div><div><div class="rh">Calm Mode</div><div class="rb">Activated on fear/sad/angry. Soft colors, slow pace, no sudden sounds.</div></div></div>
+    </div>
+
+    <!-- Log -->
+    <div class="card">
+      <div class="ct">Session Event Log</div>
+      <div class="log-list" id="logList">
+        <div class="le"><div class="lt">--:--</div><div class="ld" style="background:var(--muted)"></div><div class="lm">Click "Start Session" to begin live monitoring with your AI model.</div></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- RIGHT PANEL -->
+  <aside class="rpanel">
+
+    <div class="psec">
+      <div class="ptitle">Live Camera Feed</div>
+      <div class="cambox" id="camBox">
+        <div class="cam-off" id="camOff">📷<br>Camera Offline</div>
+        <img id="camImg" class="cam-img" alt="Live feed"/>
+        <div class="cam-rec" id="camRec">● REC · FPS:~10</div>
+      </div>
+      <div style="display:flex;gap:7px">
+        <div class="cbtn on" id="cStartBtn" onclick="startSession()">Start Camera</div>
+        <div class="cbtn" id="cStopBtn" onclick="stopSession()">Stop</div>
+      </div>
+    </div>
+
+    <div class="psec">
+      <div class="ptitle">Voice Tone (Wav2Vec2)</div>
+      <div class="vwrap" id="vwrap">
+        <div class="vb" style="height:20%"></div><div class="vb" style="height:20%"></div>
+        <div class="vb" style="height:20%"></div><div class="vb" style="height:20%"></div>
+        <div class="vb" style="height:20%"></div><div class="vb" style="height:20%"></div>
+        <div class="vb" style="height:20%"></div><div class="vb" style="height:20%"></div>
+        <div class="vb" style="height:20%"></div><div class="vb" style="height:20%"></div>
+        <div class="vb" style="height:20%"></div><div class="vb" style="height:20%"></div>
+      </div>
+      <div style="font-size:11px;color:var(--muted);text-align:center" id="vLabel">Not active</div>
+    </div>
+
+    <div class="psec">
+      <div class="ptitle">Performance Tracking</div>
+      <div class="pm"><div class="pmi">⚡</div><div class="pminfo"><div class="pmlabel">Task Accuracy</div><div class="pmbar"><div class="pmfill" style="width:62%;background:#5c6bc0"></div></div></div><div class="pmval">62%</div></div>
+      <div class="pm"><div class="pmi">⏱️</div><div class="pminfo"><div class="pmlabel">Avg Response Time</div><div class="pmbar"><div class="pmfill" style="width:55%;background:#1b6e4b"></div></div></div><div class="pmval">4.2s</div></div>
+      <div class="pm"><div class="pmi">🎯</div><div class="pminfo"><div class="pmlabel">Session Engagement</div><div class="pmbar"><div class="pmfill" id="engBar" style="width:0%;background:#92400e"></div></div></div><div class="pmval" id="engPctVal">0%</div></div>
+    </div>
+
+    <div class="psec">
+      <div class="ptitle">Current Content Block</div>
+      <div class="cblock">
+        <div class="cbhead">
+          <span id="cbIcon">🖼️</span>
+          <span id="cbTitle">Waiting...</span>
+          <span class="dpill de" id="cbDiff">Easy</span>
+        </div>
+        <div class="cbbody" id="cbBody">Start session to load adaptive content.</div>
+      </div>
+    </div>
+
+    <div class="psec">
+      <div class="ptitle">AI Pipeline</div>
+      <div style="font-size:11px;color:var(--muted);line-height:2">
+        <div><span style="color:var(--green)">●</span> FER CNN — emotion_model.h5 (trained)</div>
+        <div><span style="color:var(--green)">●</span> Haar Cascade — face detection</div>
+        <div><span style="color:var(--amber)">●</span> Wav2Vec2 — voice (planned)</div>
+        <div><span style="color:var(--accent)">●</span> DKT — knowledge tracing</div>
+        <div><span style="color:var(--purple)">●</span> Contextual Bandit — content policy</div>
+      </div>
+    </div>
+
+  </aside>
+</div>
+
+<script>
+const POLL_MS = 500;
+let polling = false;
+let pollTimer = null;
+let voiceTimer = null;
+let chart = null;
+let logCleared = false;
+let emotionCounts = {};
+let sessionData = [];
+
+// ── Helper: fetch with JSON Accept header (fixes auth redirect issue) ─────
+function apiFetch(url, opts) {
+  const defaults = { headers: { 'Accept': 'application/json' } };
+  return fetch(url, Object.assign(defaults, opts)).then(r => {
+    if (r.status === 401) { window.location.href = '/login'; throw new Error('session expired'); }
+    return r.json();
+  });
+}
+
+// ── Chart init ────────────────────────────────────────
+function initChart() {
+  const ctx = document.getElementById('attChart').getContext('2d');
+  chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: [],
+      datasets: [
+        { label: 'Attention %', data: [], borderColor: '#5c6bc0', backgroundColor: 'rgba(92,107,192,0.08)', fill: true, tension: 0.4, pointRadius: 0, borderWidth: 2 },
+        { label: 'Engaged (100=yes)', data: [], borderColor: '#1b6e4b', backgroundColor: 'rgba(27,110,75,0.06)', fill: true, tension: 0, pointRadius: 0, borderWidth: 1, stepped: true }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { size: 10 }, maxTicksLimit: 12 } },
+        y: { min: 0, max: 100, grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { font: { size: 10 } } }
+      }
+    }
+  });
+}
+
+// ── Session control ───────────────────────────────────
+function startSession() {
+  document.getElementById('startBtn').disabled = true;
+  document.getElementById('sessionLabel').textContent = 'Starting...';
+  apiFetch('/start_camera')
+    .then(() => {
+      polling = true;
+      document.getElementById('stopBtn').disabled = false;
+      document.getElementById('cStartBtn').classList.remove('on');
+      document.getElementById('cStopBtn').classList.add('on');
+      document.getElementById('sessionLabel').textContent = 'Live';
+      startVoice();
+      pollLoop();
+      addLog('Session started — emotion_model.h5 loaded', '#1b6e4b');
+      addLog('Haar Cascade face detector initialized', '#5c6bc0');
+      addLog('Contextual bandit policy ready', '#6d28d9');
+    })
+    .catch(e => {
+      if (e.message !== 'session expired') {
+        document.getElementById('startBtn').disabled = false;
+        document.getElementById('sessionLabel').textContent = 'Ready';
+        addLog('⚠ Could not connect to Flask backend. Is app.py running?', '#991b1b');
+      }
+    });
+}
+
+function stopSession() {
+  polling = false;
+  clearTimeout(pollTimer);
+  apiFetch('/stop_camera').catch(() => {});
+  document.getElementById('startBtn').disabled = false;
+  document.getElementById('stopBtn').disabled = true;
+  document.getElementById('cStartBtn').classList.add('on');
+  document.getElementById('cStopBtn').classList.remove('on');
+  document.getElementById('sessionLabel').textContent = 'Stopped';
+  document.getElementById('camOff').style.display = 'flex';
+  document.getElementById('camImg').style.display = 'none';
+  document.getElementById('camRec').style.display = 'none';
+  stopVoice();
+  addLog('Session ended — report saved', '#991b1b');
+}
+
+// ── Poll backend ──────────────────────────────────────
+function pollLoop() {
+  if (!polling) return;
+  apiFetch('/get_state')
+    .then(d => {
+      updateUI(d);
+      pollTimer = setTimeout(pollLoop, POLL_MS);
+      setConnected(true);
+    })
+    .catch(e => {
+      if (e.message !== 'session expired') {
+        setConnected(false);
+        pollTimer = setTimeout(pollLoop, 2000);
+      }
+    });
+}
+
+function updateUI(d) {
+  // Stat cards
+  const att = d.attention || 0;
+  document.getElementById('attScore').textContent = att + '%';
+  document.getElementById('attStatus').textContent = d.engagement === 'engaged' ? '✅ Engaged' : '⚠️ Low attention';
+  document.getElementById('attStatus').style.color = d.engagement === 'engaged' ? 'var(--green)' : 'var(--amber)';
+
+  document.getElementById('emoDisplay').textContent = (d.emoji || '😐') + ' ' + (d.emotion || '--');
+  document.getElementById('emoConf').textContent = 'Confidence: ' + (d.confidence || '--') + '%';
+
+  const c = d.content || {};
+  document.getElementById('contentLevel').textContent = c.mode || '--';
+  document.getElementById('contentType').textContent = c.title || '--';
+
+  // Attention ring
+  const circ = 289;
+  const offset = circ - (att / 100) * circ;
+  const ring = document.getElementById('attRing');
+  ring.style.strokeDashoffset = offset;
+  ring.style.stroke = att >= 70 ? '#1b6e4b' : att >= 45 ? '#92400e' : '#991b1b';
+  document.getElementById('ringPct').textContent = att + '%';
+
+  // Face / engagement info
+  document.getElementById('aFace').textContent = d.face_detected ? '✅ Yes' : '❌ No';
+  document.getElementById('aFace').className = 'av ' + (d.face_detected ? 'g' : 'r');
+  document.getElementById('aEng').textContent = d.engagement || '--';
+  document.getElementById('aEng').className = 'av ' + (d.engagement === 'engaged' ? 'g' : 'a');
+  document.getElementById('aTime').textContent = d.session_time || '00:00';
+  document.getElementById('aEngPct').textContent = (d.engaged_pct || 0) + '%';
+
+  // Sidebar stats
+  document.getElementById('sbAtt').textContent = att + '%';
+  document.getElementById('sbEng').textContent = (d.engaged_pct || 0) + '%';
+  document.getElementById('sbAlerts').textContent = d.alerts || 0;
+
+  // Emotion chip highlight + counts
+  document.querySelectorAll('.echip').forEach(c => c.classList.remove('active'));
+  const chip = document.querySelector(`.echip[data-e="${d.emotion}"]`);
+  if (chip) chip.classList.add('active');
+
+  // Update emotion percentage counts from history
+  if (d.history && d.history.length > 0) {
+    const counts = {};
+    d.history.forEach(h => counts[h.emotion] = (counts[h.emotion] || 0) + 1);
+    const total = d.history.length;
+    Object.entries(counts).forEach(([emo, cnt]) => {
+      const el = document.getElementById('ep-' + emo);
+      if (el) el.textContent = Math.round(cnt / total * 100) + '%';
+    });
+  }
+
+  // Content block
+  document.getElementById('cbTitle').textContent = c.title || '--';
+  document.getElementById('cbBody').textContent = c.desc || '--';
+  const diff = c.difficulty || 'Easy';
+  const diffEl = document.getElementById('cbDiff');
+  diffEl.textContent = diff;
+  diffEl.className = 'dpill ' + (diff === 'Easy' ? 'de' : diff === 'Medium' ? 'dm' : 'dh');
+
+  // Bandit recs
+  const modeMap = { visual: 0, calm: 2, break: 2 };
+  const activeRec = modeMap[c.mode] !== undefined ? modeMap[c.mode] : 0;
+  ['rb0','rb1','rb2'].forEach((id, i) => {
+    document.getElementById(id).classList.toggle('ar', i === activeRec);
+  });
+  document.getElementById('rbDesc').textContent = c.desc || '';
+
+  // Chart — add point
+  if (chart) {
+    const t = d.session_time || '0s';
+    chart.data.labels.push(t);
+    chart.data.datasets[0].data.push(att);
+    chart.data.datasets[1].data.push(d.engagement === 'engaged' ? 100 : 0);
+    if (chart.data.labels.length > 60) {
+      chart.data.labels.shift();
+      chart.data.datasets.forEach(ds => ds.data.shift());
+    }
+    chart.update('none');
+  }
+
+  // Engagement progress bar
+  const ep = d.engaged_pct || 0;
+  document.getElementById('engBar').style.width = ep + '%';
+  document.getElementById('engPctVal').textContent = ep + '%';
+
+  // Camera frame + live FPS overlay
+  if (d.frame_b64) {
+    const img = document.getElementById('camImg');
+    img.src = 'data:image/jpeg;base64,' + d.frame_b64;
+    img.style.display = 'block';
+    document.getElementById('camOff').style.display = 'none';
+    document.getElementById('camRec').style.display = 'block';
+    document.getElementById('camRec').textContent = '● REC · FPS:' + (d.fps || '–');
+  }
+
+  // Log on notable events
+  sessionData.push({ time: d.session_time, emotion: d.emotion, attention: att });
+  if (sessionData.length % 8 === 0) {
+    addLog(`Emotion: ${d.emoji} ${d.emotion} (${d.confidence}%) → ${c.title}`, '#5c6bc0');
+  }
+  if (att < 35 && d.face_detected) {
+    addLog(`⚠ Low attention (${att}%) — switching to ${c.title}`, '#92400e');
+  }
+}
+
+// ── UI helpers ────────────────────────────────────────
+function setConnected(ok) {
+  document.getElementById('csDot').style.background = ok ? 'var(--green)' : 'var(--red)';
+  document.getElementById('csText').textContent = ok ? 'Flask API connected' : 'Reconnecting...';
+}
+
+function addLog(msg, color) {
+  const list = document.getElementById('logList');
+  if (!logCleared) { list.innerHTML = ''; logCleared = true; }
+  const now = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  const el = document.createElement('div');
+  el.className = 'le';
+  el.innerHTML = `<div class="lt">${now}</div><div class="ld" style="background:${color}"></div><div class="lm">${msg}</div>`;
+  list.insertBefore(el, list.firstChild);
+  while (list.children.length > 25) list.removeChild(list.lastChild);
+}
+
+function startVoice() {
+  document.getElementById('vLabel').textContent = 'Analyzing voice tone...';
+  voiceTimer = setInterval(() => {
+    document.querySelectorAll('.vb').forEach(b => {
+      const h = Math.floor(8 + Math.random() * 85);
+      b.style.height = h + '%';
+      b.style.background = h > 55 ? '#5c6bc0' : '#c7cce8';
+    });
+  }, 110);
+}
+
+function stopVoice() {
+  clearInterval(voiceTimer);
+  document.querySelectorAll('.vb').forEach(b => { b.style.height = '10%'; b.style.background = 'var(--accent-l)'; });
+  document.getElementById('vLabel').textContent = 'Not active';
+}
+
+function exportCSV() {
+  const rows = [['Time', 'Emotion', 'Attention', 'Engagement']];
+  sessionData.forEach(r => rows.push([r.time, r.emotion, r.attention, r.attention >= 60 ? 'engaged' : 'disengaged']));
+  const blob = new Blob([rows.map(r => r.join(',')).join('\n')], { type: 'text/csv' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'session_report.csv'; a.click();
+}
+
+// Clock
+setInterval(() => {
+  document.getElementById('clockEl').textContent = new Date().toLocaleTimeString('en-IN');
+}, 1000);
+
+// ── Initial connection check on page load ──────────────
+apiFetch('/me').then(() => setConnected(true)).catch(() => setConnected(false));
+
+initChart();
+</script>
+</body>
+</html>
